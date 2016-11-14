@@ -10,6 +10,10 @@
              <br>
              <input type="submit" value="Submit" class="btn btn-primary">
         </form>
+		<form method="post" enctype="multipart/form-data" action="/comments" class="panel-body validate">
+		{% csrf_token %}
+			<input type="submit" value="Cancel" class="btn btn-primary">
+		</form>
     </div>
 </div>
 {% endblock %}
