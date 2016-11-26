@@ -4,6 +4,7 @@ Created by Naman Patwari on 10/4/2016.
 """
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django import forms
+
 from .models import MyUser
 
 class LoginForm(forms.Form):
@@ -19,8 +20,22 @@ class RegisterForm(forms.Form):
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput, required=True)    
 
     firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
-    lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)               
+    lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
 
+    roles = (
+        ('Student', 'Student'),
+        ('Teacher', 'Teacher'),
+        ('Engineer', 'Engineer'),
+    )
+
+    role = forms.MultipleChoiceField(
+        choices=roles,
+        widget=forms.CheckboxSelectMultiple() ) 
+
+    university = forms.CharField(label="University", widget=forms.TextInput, required=False)
+    about = forms.CharField(label="About", widget=forms.TextInput, required=False)
+    contactinfo = forms.CharField(label="Contact Info", widget=forms.TextInput, required=False)      
+    
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")

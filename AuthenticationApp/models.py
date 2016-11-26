@@ -10,7 +10,8 @@ from django.db.models.signals import post_save
 
 # Create your models here.
 class MyUserManager(BaseUserManager):
-    def create_user(self, email=None, password=None, first_name=None, last_name=None):
+    def create_user(self, email=None, password=None, first_name=None, last_name=None,
+                    role=None, user_university=None, about=None, contact_info=None):
         if not email:
             raise ValueError('Users must have an email address')
 
@@ -19,7 +20,11 @@ class MyUserManager(BaseUserManager):
         user = self.model(email=email)
         user.set_password(password)
         user.last_name = last_name
-
+        user.role = role
+        user.user_university = user_university
+        user.about = about
+        user.contact_info = contact_info
+        
         #If first_name is not present, set it as email's username by default
         if first_name is None or first_name == "" or first_name == '':                                
             user.first_name = email[:email.find("@")]            
@@ -57,10 +62,18 @@ class MyUser(AbstractBaseUser):
     is_admin = models.BooleanField(default=False,)
 
     # #New fields added
-    # is_student = models.BooleanField(default=False,)
-    # is_professor = models.BooleanField(default=False,)
-    # is_engineer = models.BooleanField(default=False,)    
+    role = models.CharField(max_length=200, null=True, blank=True)
 
+    #is_student = models.BooleanField(default=False,)
+    #is_teacher = models.BooleanField(default=False,)
+    #is_engineer = models.BooleanField(default=False,)    
+
+    #university = models.ManyToManyField(University, on_delete=models.CASCADE)
+    #university = models.University(
+    user_university = models.CharField(max_length=120, null=True, blank=True)
+    about = models.CharField(max_length=120, null=True, blank=True)
+    contact_info = models.CharField(max_length=120, null=True, blank=True)
+    
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
@@ -119,7 +132,36 @@ class Student(models.Model):
     def has_module_perms(self, app_label):        
         return True
 
+    @property
+    def is_staff(self):
+        return False
+
+class Engineer(models.Model):
+    user = models.OneToOneField(
+        MyUser,
+        on_delete=models.CASCADE,
+        primary_key=True)
+
+    def get_full_name(self):        
+        return "%s %s" %(self.user.first_name, self.user.last_name)
+
+    def get_short_name(self):        
+        return self.user.first_name
+
+    def __str__(self):              #Python 3
+        return self.user.email
+
+    def __unicode__(self):           # Python 2
+        return self.user.email
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):        
+        return True
 
     @property
     def is_staff(self):
         return False
+
+#TODO same thing for Teacher as I have done for Engineer 
