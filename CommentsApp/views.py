@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from . import models
 from . import forms
@@ -24,7 +26,8 @@ def addComment(request):
             context = {
                 'comments' : comments_list,
             }
-            return render(request, 'comments.html', context)
+            #return render(request, 'comments.html', context)
+            return HttpResponseRedirect(reverse('Comments'))
         else:
             form = forms.CommentForm()
     return render(request, 'comments.html')
