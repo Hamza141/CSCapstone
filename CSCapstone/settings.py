@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import mimetypes
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -134,3 +135,5 @@ AUTH_USER_MODEL = 'AuthenticationApp.MyUser'
 
 #Use @login_required for functions that require authenticated users
 LOGIN_URL = "/login"
+
+mimetypes.add_type("text/css", ".css", True)
