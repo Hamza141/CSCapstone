@@ -164,4 +164,33 @@ class Engineer(models.Model):
     def is_staff(self):
         return False
 
-#TODO same thing for Teacher as I have done for Engineer 
+#TODO same thing for Teacher as I have done for Engineer
+
+class Teacher(models.Model):
+    user = models.OneToOneField(
+        MyUser,
+        on_delete=models.CASCADE,
+        primary_key=True)
+
+    def get_full_name(self):        
+        return "%s %s" %(self.user.first_name, self.user.last_name)
+
+    def get_short_name(self):        
+        return self.user.first_name
+
+    def __str__(self):              #Python 3
+        return self.user.email
+
+    def __unicode__(self):           # Python 2
+        return self.user.email
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):        
+        return True
+
+    @property
+    def is_staff(self):
+        return False
+
