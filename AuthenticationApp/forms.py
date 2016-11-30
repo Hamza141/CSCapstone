@@ -6,6 +6,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django import forms
 
 from .models import MyUser
+from UniversitiesApp import models
 
 class LoginForm(forms.Form):
     email = forms.CharField(label='Email')
@@ -17,7 +18,7 @@ class RegisterForm(forms.Form):
     fields, plus a repeated password."""
     email = forms.CharField(label='Email', widget=forms.EmailInput, required=True)
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput, required=True)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput, required=True)    
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput, required=True)
 
     firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
     lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
@@ -30,12 +31,11 @@ class RegisterForm(forms.Form):
 
     role = forms.MultipleChoiceField(
         choices=roles,
-        widget=forms.CheckboxSelectMultiple() ) 
+        widget=forms.CheckboxSelectMultiple())
 
-    university = forms.CharField(label="University", widget=forms.TextInput, required=False)
     about = forms.CharField(label="About", widget=forms.TextInput, required=False)
-    contactinfo = forms.CharField(label="Contact Info", widget=forms.TextInput, required=False)      
-    
+    contactinfo = forms.CharField(label="Contact Info", widget=forms.TextInput, required=False)
+
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
@@ -46,7 +46,7 @@ class RegisterForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        #Check if email exists before
+        # Check if email exists before
         try:
             exists = MyUser.objects.get(email=email)
             raise forms.ValidationError("This email has already been taken")
@@ -54,6 +54,12 @@ class RegisterForm(forms.Form):
             return email
         except:
             raise forms.ValidationError("There was an error, please contact us later")
+
+class UniversityForm(forms.Form):
+    university = forms.ModelChoiceField(queryset=models.University.objects.all())
+
+class CompanyForm(forms.Form):
+    user_company = "test"
 
 class UpdateForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on
@@ -63,18 +69,18 @@ class UpdateForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
 
     class Meta:
-        model = MyUser        
+        model = MyUser
         fields = ('email', 'password', 'first_name', 'last_name')
 
-    def clean_password(self):            
-        return self.initial["password"]        
+    def clean_password(self):
+        return self.initial["password"]
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        #Check is email has changed
+        # Check is email has changed
         if email == self.initial["email"]:
             return email
-        #Check if email exists before
+        # Check if email exists before
         try:
             exists = MyUser.objects.get(email=email)
             raise forms.ValidationError("This email has already been taken")
@@ -85,25 +91,25 @@ class UpdateForm(forms.ModelForm):
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get("first_name")
-        #Check is email has changed
-        if first_name is None or first_name == "" or first_name == '':  
-            email = self.cleaned_data.get("email")                               
-            return email[:email.find("@")]      
+        # Check is email has changed
+        if first_name is None or first_name == "" or first_name == '':
+            email = self.cleaned_data.get("email")
+            return email[:email.find("@")]
         return first_name
-   
 
 
 """Admin Forms"""
+
 
 class AdminUserCreationForm(forms.ModelForm):
     """A form for Admin to creating new users. Includes all the required
     fields, plus a repeated password."""
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)    
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
         model = MyUser
-        fields = ('email', 'first_name', 'last_name')        
+        fields = ('email', 'first_name', 'last_name')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -131,11 +137,10 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        #fields = ('email', 'password', 'first_name', 'last_name', 'is_active', 'is_admin')
         fields = ('email', 'password', 'first_name', 'last_name', 'is_active', 'is_admin')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
-        return self.initial["password"]        
+        return self.initial["password"]
