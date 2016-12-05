@@ -98,6 +98,9 @@ db.sqlite3
 # images
 .png
 .jpg
+
+#idea
+.idea/
 .idea/workspace.xml
 .idea/CSCapstone.iml
 .idea/misc.xml
