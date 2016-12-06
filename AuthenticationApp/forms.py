@@ -6,7 +6,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django import forms
 
 from .models import MyUser
-from UniversitiesApp import models
+
 
 class LoginForm(forms.Form):
     email = forms.CharField(label='Email')
@@ -20,8 +20,8 @@ class RegisterForm(forms.Form):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput, required=True)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput, required=True)
 
-    firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
-    lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
+    firstname = forms.CharField(label="First name", widget=forms.TextInput, required=True)
+    lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=True)
 
     roles = (
         ('Student', 'Student'),
@@ -29,9 +29,10 @@ class RegisterForm(forms.Form):
         ('Engineer', 'Engineer'),
     )
 
-    role = forms.MultipleChoiceField(
+    role = forms.ChoiceField(
         choices=roles,
-        widget=forms.CheckboxSelectMultiple())
+        widget=forms.RadioSelect,
+        required=True)
 
     about = forms.CharField(label="About", widget=forms.TextInput, required=False)
     contactinfo = forms.CharField(label="Contact Info", widget=forms.TextInput, required=False)
@@ -55,11 +56,16 @@ class RegisterForm(forms.Form):
         except:
             raise forms.ValidationError("There was an error, please contact us later")
 
+
 class UniversityForm(forms.Form):
-    university = forms.ModelChoiceField(queryset=models.University.objects.all())
+    from UniversitiesApp import models
+    university = forms.ModelChoiceField(queryset=models.University.objects.all(), required=True)
+
 
 class CompanyForm(forms.Form):
-    user_company = "test"
+    from CompaniesApp import models
+    company = forms.ModelChoiceField(queryset=models.Company.objects.all(), required=True)
+
 
 class UpdateForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on

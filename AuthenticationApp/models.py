@@ -6,7 +6,6 @@ Created by Naman Patwari on 10/4/2016.
 from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-from django.db.models.signals import post_save
 
 
 # Create your models here.
@@ -16,10 +15,11 @@ class MyUserManager(BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
 
-        # We can safetly create the user
+        # We can safely create the user
         # Only the email field is required
         user = self.model(email=email)
         user.set_password(password)
+        user.first_name = first_name
         user.last_name = last_name
         user.role = role
         user.user_university = user_university
@@ -72,6 +72,7 @@ class MyUser(AbstractBaseUser):
     # university = models.ManyToManyField(University, on_delete=models.CASCADE)
     # university = models.University(
     user_university = models.CharField(max_length=120, null=True, blank=True)
+    user_company = models.CharField(max_length=120, null=True, blank=True)
     about = models.CharField(max_length=120, null=True, blank=True)
     contact_info = models.CharField(max_length=120, null=True, blank=True)
 
@@ -166,7 +167,6 @@ class Engineer(models.Model):
     @property
     def is_staff(self):
         return False
-
 
 
 class Teacher(models.Model):

@@ -3,15 +3,15 @@
 Created by Naman Patwari on 10/4/2016.
 """
 
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 
 from .forms import LoginForm, RegisterForm, UpdateForm, UniversityForm, CompanyForm
 from .models import MyUser, Student, Engineer, Teacher
-from UniversitiesApp import models
 
 
 # Auth Views
@@ -59,42 +59,14 @@ def auth_register(request):
                                               first_name=form.cleaned_data['firstname'],
                                               last_name=form.cleaned_data['lastname'],
                                               role=form.cleaned_data["role"],
-                                              # user_university=form.cleaned_data['university'],
                                               about=form.cleaned_data['about'],
                                               contact_info=form.cleaned_data['contactinfo'])
 
-        if "Student" or "Teacher" in new_user.role:
-            form2 = UniversityForm(request.POST or None, prefix='university')
-            if form2.is_valid():
-                # TODO this is the wrong way to display a different form
-                in_university = models.University.objects.get(name__exact=form2.cleaned_data['university'])
-                in_university.members.add(new_user)
-                in_university.save()
-                new_user.university_set.add(in_university)
-                new_user.save()
-
         new_user.save()
-        # Also registering students
-        print(new_user.role)
-        if "Student" in new_user.role:
-            new_student = Student(user=new_user)
-            new_student.save()
-        if "Engineer" in new_user.role:
-            new_engineer = Engineer(user=new_user)
-            new_engineer.save()
-        if "Teacher" in new_user.role:
-            new_teacher = Teacher(user=new_user)
-            new_teacher.save()
+
         login(request, new_user)
-        messages.success(request, 'Success! Your account was created.')
-        # return render(request, 'index.html')
-        context = {
-            "form": form2,
-            "page_name": "Choose University",
-            "button_value": "Choose",
-            "links": ["login"]
-        }
-        return render(request, 'university_form.html', context)
+
+        return HttpResponseRedirect(reverse('ChooseRole'))
 
     context = {
         "form": form,
@@ -102,6 +74,66 @@ def auth_register(request):
         "button_value": "Register",
         "links": ["login"],
     }
+    return render(request, 'auth_form.html', context)
+
+
+def choose_role(request):
+    uni = False
+    com = False
+    if "Student" or "Teacher" in request.user.role:
+        form = UniversityForm(request.POST or None)
+        uni = True
+        com = False
+
+    if "Engineer" in request.user.role:
+        form = CompanyForm(request.POST or None)
+        uni = False
+        com = True
+
+    # noinspection PyUnboundLocalVariable
+    if form.is_valid():
+        if uni is True:
+            from UniversitiesApp import models
+            in_university = models.University.objects.get(name__exact=form.cleaned_data['university'])
+            in_university.members.add(request.user)
+            in_university.save()
+            request.user.university_set.add(in_university)
+            request.user.user_university = models.University.objects.get(name__exact=form.cleaned_data['university']).name
+            request.user.save()
+
+            if "Student" in request.user.role:
+                new_student = Student(user=request.user)
+                new_student.save()
+
+            if "Teacher" in request.user.role:
+                new_teacher = Teacher(user=request.user)
+                new_teacher.save()
+
+            messages.success(request, 'Success! Your account was created and you have chosen a University!')
+
+        if com is True:
+            from CompaniesApp import models
+            in_company = models.Company.objects.get(name__exact=form.cleaned_data['company'])
+            in_company.members.add(request.user)
+            in_company.save()
+            request.user.company_set.add(in_company)
+            request.user.user_company = models.Company.objects.get(name__exact=form.cleaned_data['company']).name
+            request.user.save()
+
+            new_engineer = Engineer(user=request.user)
+            new_engineer.save()
+
+            messages.success(request, 'Success! Your account was created and you have chosen a Company!')
+
+        return render(request, 'index.html')
+
+    context = {
+        "form": form,
+        "page_name": "Choose",
+        "button_value": "Choose",
+        "links": ["login"],
+    }
+
     return render(request, 'auth_form.html', context)
 
 
