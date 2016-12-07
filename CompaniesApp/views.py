@@ -3,11 +3,15 @@ CompaniesApp Views
 
 Created by Jacob Dunbar on 10/2/2016.
 """
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
+from AuthenticationApp.models import MyUser
+from CompaniesApp.forms import ProjectForm
+from ProjectsApp.models import Project
 from . import models
 from . import forms
-
+import datetime
 
 def getCompanies(request):
     if request.user.is_authenticated():
@@ -100,42 +104,84 @@ def unjoinCompany(request):
 
 def addProject(request):
     if request.user.is_authenticated():
-        if request.method == 'POST':
-            form = forms.ProjectForm(request.POST)
-            if form.is_valid():
-                in_company_name = request.GET.get('name', 'None')
-                from . import models
-                in_company = models.Company.objects.get(name__exact=in_company_name)
-                if in_company.course_set.filter(description_exaction=form.cleaned_data['description']).exists():
-                    return render(request, 'projectform.html',
-                                  {'error': 'Error: That project name already exists at this Company!'})
-                from ProjectsApp import models
-                new_project = models.Project(name=form.cleaned_data['name'],
-                                             description=form.cleaned_data['description'],
-                                             yearsOfExperience=form.cleaned_data['yearsOfExperience'],
-                                             programmingLanguage=form.cleaned_data['programmingLanguage'],
-                                             speciality=form.cleaned_data['speciality'],
-                                             company=in_company_name)
-                from . import models
-                new_project.save()
-                in_company.project_set.add(new_project)
-                is_member = in_company.members.filter(email__exact=request.user.email)
-                context = {
-                    'company': in_company,
-                    'userIsMember': is_member,
-                }
-                return render(request, 'company.html', context)
+        form = ProjectForm(request.POST or None)
+
+        if form.is_valid():
+            in_name = request.GET.get('name', 'None')
+            in_company = models.Company.objects.get(name__exact=in_name)
+            is_member = in_company.members.filter(email__exact=request.user.email)
+
+            new_project = Project(name=form.cleaned_data['name'],
+                                         description=form.cleaned_data["description"],
+                                         yearsOfExperience=form.cleaned_data['yearsOfExperience'],
+                                         programmingLanguage=form.cleaned_data['programmingLanguage'],
+                                         speciality=form.cleaned_data["speciality"],
+                                         company=in_company)
+            # contact_info=form.cleaned_data['contactinfo'])
+            new_project.created_at = datetime.datetime.now();
+            new_project.save()
 
             context = {
-                "form": form,
-                "page_name": "Add Project",
-                "button_value": "Add",
-                "links": ["logout"],
+                'company': in_company,
+                'userIsMember': is_member,
             }
-            return render(request, 'projectform.html',context)
+            return render(request, 'company.html', context)
 
-        else:
-            form = forms.ProjectForm()
-            return render(request, 'projectform.html')
-            # render error page if user is not logged in
-    return render(request, 'autherror.html')
+        context = {
+            "form": form,
+            "page_name": "Add a Project",
+            "button_value": "Add",
+            "links": ["logout"],
+        }
+        return render(request, 'projectform.html', context)
+
+    return render(request,"autherror.html")
+
+    """"" if request.user.is_authenticated():
+            if request.method == 'POST':
+                form = forms.ProjectForm(request.POST or None)
+                if form.is_valid():
+                    in_company_name = request.GET.get('name', 'None')
+                    from . import models
+                    in_company = models.Company.objects.get(name__exact=in_company_name)
+                    if in_company.course_set.filter(description_exaction=form.cleaned_data['description']).exists():
+                        return render(request, 'projectform.html',
+                                      {'error': 'Error: That project name already exists at this Company!'})
+                    from ProjectsApp import models
+                    new_project = models.Project(name=form.cleaned_data['name'],
+                                                 description=form.cleaned_data['description'],
+                                                 assignedTo=form.cleaned_data['assignedTo'],
+                                                 yearsOfExperience=form.cleaned_data['yearsOfExperience'],
+                                                 programmingLanguage=form.cleaned_data['programmingLanguage'],
+                                                 speciality=form.cleaned_data['speciality'],
+                                                 company=in_company_name)
+                    from . import models
+                    new_project.save()
+                    in_company.project_set.add(new_project)
+                    is_member = in_company.members.filter(email__exact=request.user.email)
+                    context = {
+                        'company': in_company,
+                        'userIsMember': is_member,
+                    }
+                    return render(request, 'company.html', context)
+
+                context = {
+                    "form": form,
+                    "page_name": "Add Project",
+                    "button_value": "Add",
+                    "links": ["logout"],
+                }
+                return render(request, 'projectform.html', context)
+
+            else:
+                form = forms.ProjectForm()
+                context = {
+                    "form": form,
+                    "page_name": "Add Project",
+                    "button_value": "Add",
+                    "links": ["logout"],
+                }
+                return render(request, 'projectform.html', context)
+                # render error page if user is not logged in
+        return render(request, 'autherror.html')
+    """
