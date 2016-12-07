@@ -9,7 +9,8 @@
             <p>{{ company.description }}</p>
             <h5><a href="{{ company.website }}">Website</a></h5>
             {% if userIsMember %}
-                <a href="/company/unjoin?name={{ company.name }}" class="btn btn-default pull-right">Unjoin this Company</a>
+                <a href="/company/unjoin?name={{ company.name }}" class="btn btn-default pull-right">Unjoin this
+                    Company</a>
             {% endif %}
             {% if "Engineer" in user.role %}
                 {% if None is user.user_company or "" == user.user_company or '' == user.user_company %}
@@ -35,5 +36,32 @@
                 </tbody>
             </table>
         </div>
+        <div class="table-responsive">
+            <table class="table table-striped sortable">
+                <thead>
+                <tr>
+                    <th>Projects</th>
+                    <th>Description</th>
+                    <th>Assigned To</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in company.project_set.all %}
+                    <tr>
+                        <td>
+                            <a href="/company/project?name={{ company.name }}&project={{ item.tag }}">{{ item.tag }}</a>
+                        </td>
+                        <td>
+                            <a href="/company/project?name={{ company.name }}&project={{ item.tag }}">{{ item.name }}</a>
+                        </td>
+                        <td>{{ item.description }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if "Engineer" in user.role and company.name in user.user_company %}
+            <a href="/company/project/form?name={{ company.name }}" class="btn btn-default">Add a Project</a>
+        {% endif %}
     </div>
 {% endblock %}

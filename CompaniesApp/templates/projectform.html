@@ -4,24 +4,21 @@
 	<!-- Content -->
 	<div class="container" role="main">
 		<div class="jumbotron">
-			<h3 style="margin: 0px; padding: 0px;">Create Company</h3>
+			<h1 style="margin: 0px; padding: 0px;">{{ company.name }}</h1>
+			<h3 style="margin: 0px; padding: 0px;">Create New Project</h3>
 		</div>
 		<div class="panel panel-default">
-			<form method="post" enctype="multipart/form-data" action="/company/formsuccess" class="panel-body validate">
+			<form method="post" enctype="multipart/form-data" action="/company/project/add?name={{ company.name }}" class="panel-body validate">
                 {% csrf_token %}
-				<label for="name">Name</label>
-                <h6 style="color:red">{{ error }}</h6>
+				<label for="tag">Tag (ex. Project 1)</label>
+				<h6 style="color:red">{{ error }}</h6>
+				<input type="text" name="tag" id="tag" placeholder="Tag" class="form-control" data-bvalidator="required" data-bvalidator-msg="Tag Required">
+				<br>
+				<label for="name">Name (ex. Senior Design)</label>
 				<input type="text" name="name" id="name" placeholder="Name" class="form-control" data-bvalidator="required" data-bvalidator-msg="Name Required">
 				<br>
-                <!--suppress XmlInvalidId -->
-				<label for="photo">Upload a Photo</label>
-                <input type="file" name="photo" />
-                <br>
-				<label for="description">Company Description</label>
+				<label for="description">Course Description</label>
 				<input type="text" name="description" id="description" placeholder="Description" class="form-control" data-bvalidator="required" data-bvalidator-msg="Description Required">
-				<br>
-                <label for="website">Website</label>
-				<input type="text" name="website" id="website" placeholder="Website" class="form-control">
 				<br>
 				<input type="submit" value="Submit" class="btn btn-primary">
 			</form>
