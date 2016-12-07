@@ -115,18 +115,25 @@ def addProject(request):
                                              yearsOfExperience=form.cleaned_data['yearsOfExperience'],
                                              programmingLanguage=form.cleaned_data['programmingLanguage'],
                                              speciality=form.cleaned_data['speciality'],
-                                             company=in_company)
+                                             company=in_company_name)
                 from . import models
                 new_project.save()
-                in_company.course_set.add(new_project)
+                in_company.project_set.add(new_project)
                 is_member = in_company.members.filter(email__exact=request.user.email)
                 context = {
                     'company': in_company,
                     'userIsMember': is_member,
                 }
                 return render(request, 'company.html', context)
-            else:
-                return render(request, 'projectform.html', {'error': 'Undefined Error!'})
+
+            context = {
+                "form": form,
+                "page_name": "Add Project",
+                "button_value": "Add",
+                "links": ["logout"],
+            }
+            return render(request, 'projectform.html',context)
+
         else:
             form = forms.ProjectForm()
             return render(request, 'projectform.html')
