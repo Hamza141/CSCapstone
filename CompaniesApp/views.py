@@ -66,7 +66,8 @@ def joinCompany(request):
         in_name = request.GET.get('name', 'None')
         in_company = models.Company.objects.get(name__exact=in_name)
         in_company.members.add(request.user)
-        in_company.save();
+        in_company.save()
+        request.user.user_company = in_company.name
         request.user.company_set.add(in_company)
         request.user.save()
         context = {
@@ -81,7 +82,8 @@ def unjoinCompany(request):
         in_name = request.GET.get('name', 'None')
         in_company = models.Company.objects.get(name__exact=in_name)
         in_company.members.remove(request.user)
-        in_company.save();
+        in_company.save()
+        request.user.user_company = None
         request.user.company_set.remove(in_company)
         request.user.save()
         context = {
