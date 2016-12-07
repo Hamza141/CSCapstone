@@ -1,0 +1,54 @@
+{% extends "body.html" %}
+
+{% block content %}
+<!-- Content -->
+<div class="container theme-showcase" role="main">
+    <div class="jumbotron">
+        <img src="/{{ company.photo }}" alt="Company Image" width=150/>
+        <h2>{{ project.name }}</h2>
+        <h3>{{ project.description }}</h3>
+        <p>{{ project.yearsOfExperience }}</p>
+    </div>
+</div>
+
+
+<!--<div class="container" role="main">
+    <div class="table-responsive">
+        <table class="table table-striped sortable">
+            <thead>
+            <tr>
+                <th>Teachers</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in course.members.all %}
+            {% if "Teacher" in item.role %}
+            <tr>
+                <td>{{ item.get_full_name }}</td>
+            </tr>
+            {% endif %}
+
+            {% endfor %}
+            </tbody>
+        </table>
+        <table class="table table-striped sortable">
+            <thead>
+            <tr>
+                <th>Students</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in course.members.all %}
+            {% if "Student" in item.role %}
+            <tr>
+                <td>{{ item.get_full_name }}</td>
+            </tr>
+            {% endif %}
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

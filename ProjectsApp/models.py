@@ -7,6 +7,10 @@ from django.db import models
 class Project(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=10000)
+    #yearsOfExperience = models.IntegerField()
+   # programmingLanguage = models.CharField(max_length=20)
+    #speciality = models.CharField(max_length=20)
+    # company_t = models.CharField(max_length=30)
     created_at = models.DateTimeField('date created')
     updated_at = models.DateTimeField('date updated')
 
