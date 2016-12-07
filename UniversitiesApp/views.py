@@ -118,10 +118,12 @@ def getCourse(request):
         in_course_tag = request.GET.get('course', 'None')
         in_course = in_university.course_set.get(tag__exact=in_course_tag)
         is_member = in_course.members.filter(email__exact=request.user.email)
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
         context = {
             'university': in_university,
             'course': in_course,
             'userInCourse': is_member,
+            'userIsMember': userIsMember,
         }
         return render(request, 'course.html', context)
     return render(request, 'autherror.html')
@@ -201,10 +203,13 @@ def joinCourse(request):
         in_course.save()
         request.user.course_set.add(in_course)
         request.user.save()
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
+
         context = {
             'university': in_university,
             'course': in_course,
             'userInCourse': True,
+            'userIsMember': userIsMember,
         }
         return render(request, 'course.html', context)
     return render(request, 'autherror.html')
@@ -221,10 +226,13 @@ def unjoinCourse(request):
         in_course.save()
         request.user.course_set.remove(in_course)
         request.user.save()
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
+
         context = {
             'university': in_university,
             'course': in_course,
             'userInCourse': False,
+            'userIsMember': userIsMember,
         }
         return render(request, 'course.html', context)
     return render(request, 'autherror.html')
@@ -232,7 +240,7 @@ def unjoinCourse(request):
 
 # noinspection PyPep8Naming
 def addStudent(request):
-    form = forms.AddStudentForm(request.POST)
+    form = forms.AddStudentForm(request.POST or None)
     if request.user.is_authenticated:
         if form.is_valid():
             student = MyUser.objects.get_by_natural_key(form.cleaned_data['student'])
@@ -245,14 +253,16 @@ def addStudent(request):
             in_course.save()
             student.course_set.add(in_course)
             student.save()
+            userIsMember = in_university.members.filter(email__exact=request.user.email)
 
             context = {
                 'university': in_university,
                 'course': in_course,
                 'userInCourse': True,
+                'userIsMember': userIsMember,
             }
             return render(request, 'course.html', context)
-            # return HttpResponseRedirect(reverse('Course'))
+            #return HttpResponseRedirect(reverse('Course'))
 
         context = {
             "form": form,
@@ -279,10 +289,13 @@ def removeStudent(request):
         in_course.save()
         in_user.course_set.remove(in_course)
         in_user.save()
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
+
         context = {
             'university': in_university,
             'course': in_course,
             'userInCourse': True,
+            'userIsMember': userIsMember,
         }
         return render(request, 'course.html', context)
     return render(request, 'autherror.html')
