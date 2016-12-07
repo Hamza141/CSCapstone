@@ -61,7 +61,6 @@ def auth_register(request):
                                               role=form.cleaned_data["role"],
                                               about=form.cleaned_data['about'],
                                               contact_info=form.cleaned_data['contactinfo'])
-
         new_user.save()
 
         login(request, new_user)

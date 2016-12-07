@@ -13,7 +13,7 @@
                     University</a>
             {% endif %}
             {% if "Student" or "Teacher" in user.role %}
-                {% if None in user.user_university or "" == user.user_university or '' == user.user_university %}
+                {% if None is user.user_university or "" == user.user_university or '' == user.user_university %}
                     <a href="/university/join?name={{ university.name }}" class="btn btn-default">Join this
                         University</a>
                 {% endif %}
@@ -83,6 +83,7 @@
         </div>
         {% if "Teacher" in user.role and university.name in user.user_university %}
             <a href="/university/course/form?name={{ university.name }}" class="btn btn-default">Add a course</a>
+            <div> <br/></div>
         {% endif %}
     </div>
 

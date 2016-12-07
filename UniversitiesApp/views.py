@@ -3,12 +3,16 @@ UniversitiesApp Views
 
 Created by Jacob Dunbar on 11/5/2016.
 """
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
-from . import models
 from . import forms
+from . import models
+from .models import MyUser
 
 
+# noinspection PyPep8Naming
 def getUniversities(request):
     if request.user.is_authenticated():
         universities_list = models.University.objects.all()
@@ -20,6 +24,7 @@ def getUniversities(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getUniversity(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
@@ -34,6 +39,7 @@ def getUniversity(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getUniversityForm(request):
     if request.user.is_authenticated():
         return render(request, 'universityform.html')
@@ -41,6 +47,7 @@ def getUniversityForm(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming,SpellCheckingInspection
 def getUniversityFormSuccess(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -67,12 +74,14 @@ def getUniversityFormSuccess(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def joinUniversity(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
         in_university = models.University.objects.get(name__exact=in_name)
         in_university.members.add(request.user)
         in_university.save()
+        request.user.user_university = in_university.name
         request.user.university_set.add(in_university)
         request.user.save()
         context = {
@@ -83,12 +92,14 @@ def joinUniversity(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def unjoinUniversity(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
         in_university = models.University.objects.get(name__exact=in_name)
         in_university.members.remove(request.user)
         in_university.save()
+        request.user.user_university = None
         request.user.university_set.remove(in_university)
         request.user.save()
         context = {
@@ -99,6 +110,7 @@ def unjoinUniversity(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -106,15 +118,18 @@ def getCourse(request):
         in_course_tag = request.GET.get('course', 'None')
         in_course = in_university.course_set.get(tag__exact=in_course_tag)
         is_member = in_course.members.filter(email__exact=request.user.email)
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
         context = {
             'university': in_university,
             'course': in_course,
             'userInCourse': is_member,
+            'userIsMember': userIsMember,
         }
         return render(request, 'course.html', context)
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def courseForm(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -127,6 +142,7 @@ def courseForm(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def addCourse(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -154,10 +170,11 @@ def addCourse(request):
         else:
             form = forms.CourseForm()
             return render(request, 'courseform.html')
-        # render error page if user is not logged in
+            # render error page if user is not logged in
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def removeCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -175,6 +192,7 @@ def removeCourse(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def joinCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -185,15 +203,19 @@ def joinCourse(request):
         in_course.save()
         request.user.course_set.add(in_course)
         request.user.save()
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
+
         context = {
             'university': in_university,
             'course': in_course,
             'userInCourse': True,
+            'userIsMember': userIsMember,
         }
         return render(request, 'course.html', context)
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming,SpellCheckingInspection
 def unjoinCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -204,10 +226,76 @@ def unjoinCourse(request):
         in_course.save()
         request.user.course_set.remove(in_course)
         request.user.save()
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
+
         context = {
             'university': in_university,
             'course': in_course,
             'userInCourse': False,
+            'userIsMember': userIsMember,
+        }
+        return render(request, 'course.html', context)
+    return render(request, 'autherror.html')
+
+
+# noinspection PyPep8Naming
+def addStudent(request):
+    form = forms.AddStudentForm(request.POST or None)
+    if request.user.is_authenticated:
+        if form.is_valid():
+            student = MyUser.objects.get_by_natural_key(form.cleaned_data['student'])
+
+            in_university_name = request.GET.get('name', 'None')
+            in_university = models.University.objects.get(name__exact=in_university_name)
+            in_course_tag = request.GET.get('course', 'None')
+            in_course = in_university.course_set.get(tag__exact=in_course_tag)
+            in_course.members.add(student)
+            in_course.save()
+            student.course_set.add(in_course)
+            student.save()
+            userIsMember = in_university.members.filter(email__exact=request.user.email)
+
+            context = {
+                'university': in_university,
+                'course': in_course,
+                'userInCourse': True,
+                'userIsMember': userIsMember,
+            }
+            return render(request, 'course.html', context)
+            #return HttpResponseRedirect(reverse('Course'))
+
+        context = {
+            "form": form,
+            "page_name": "Add Student",
+            "button_value": "Add",
+            "links": ["logout"],
+        }
+
+        return render(request, 'addstudentform.html', context)
+
+    return render(request, 'autherror.html')
+
+
+# noinspection PyPep8Naming
+def removeStudent(request):
+    if request.user.is_authenticated():
+        in_user_name = request.GET.get('email', 'None')
+        in_user = MyUser.objects.get_by_natural_key(in_user_name)
+        in_university_name = request.GET.get('name', 'None')
+        in_university = models.University.objects.get(name__exact=in_university_name)
+        in_course_tag = request.GET.get('course', 'None')
+        in_course = in_university.course_set.get(tag__exact=in_course_tag)
+        in_course.members.remove(in_user)
+        in_course.save()
+        in_user.course_set.remove(in_course)
+        in_user.save()
+        userIsMember = in_university.members.filter(email__exact=request.user.email)
+
+        context = {
+            'university': in_university,
+            'course': in_course,
+            'userInCourse': True,
+            'userIsMember': userIsMember,
         }
         return render(request, 'course.html', context)
     return render(request, 'autherror.html')
