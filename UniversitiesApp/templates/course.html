@@ -54,7 +54,7 @@
                         <tr>
                             <td>{{ item.get_full_name }}</td>
                             {% if "Teacher" in user.role %}
-                                <a href="/university/course/removestudent?name={{ university.name }}&course={{ course.tag }}&userName={{ item.get_full_name }}"
+                                <a href="/university/course/removestudent?name={{ university.name }}&course={{ course.tag }}&email={{ item.email }}"
                                    class="btn btn-default pull-right">Remove this Student</a>
                             {% endif %}
                         </tr>

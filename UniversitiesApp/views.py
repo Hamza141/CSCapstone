@@ -3,13 +3,16 @@ UniversitiesApp Views
 
 Created by Jacob Dunbar on 11/5/2016.
 """
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
 from . import forms
 from . import models
 from .models import MyUser
 
 
+# noinspection PyPep8Naming
 def getUniversities(request):
     if request.user.is_authenticated():
         universities_list = models.University.objects.all()
@@ -21,6 +24,7 @@ def getUniversities(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getUniversity(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
@@ -35,6 +39,7 @@ def getUniversity(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getUniversityForm(request):
     if request.user.is_authenticated():
         return render(request, 'universityform.html')
@@ -42,6 +47,7 @@ def getUniversityForm(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming,SpellCheckingInspection
 def getUniversityFormSuccess(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -68,6 +74,7 @@ def getUniversityFormSuccess(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def joinUniversity(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
@@ -85,6 +92,7 @@ def joinUniversity(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def unjoinUniversity(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
@@ -102,6 +110,7 @@ def unjoinUniversity(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -118,6 +127,7 @@ def getCourse(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def courseForm(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -130,6 +140,7 @@ def courseForm(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def addCourse(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -161,6 +172,7 @@ def addCourse(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def removeCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -178,6 +190,7 @@ def removeCourse(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def joinCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -197,6 +210,7 @@ def joinCourse(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming,SpellCheckingInspection
 def unjoinCourse(request):
     if request.user.is_authenticated():
         in_university_name = request.GET.get('name', 'None')
@@ -216,7 +230,7 @@ def unjoinCourse(request):
     return render(request, 'autherror.html')
 
 
-# noinspection SpellCheckingInspection
+# noinspection PyPep8Naming
 def addStudent(request):
     form = forms.AddStudentForm(request.POST)
     if request.user.is_authenticated:
@@ -238,6 +252,7 @@ def addStudent(request):
                 'userInCourse': True,
             }
             return render(request, 'course.html', context)
+            # return HttpResponseRedirect(reverse('Course'))
 
         context = {
             "form": form,
@@ -251,9 +266,10 @@ def addStudent(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def removeStudent(request):
     if request.user.is_authenticated():
-        in_user_name = request.GET.get('userName', 'None')
+        in_user_name = request.GET.get('email', 'None')
         in_user = MyUser.objects.get_by_natural_key(in_user_name)
         in_university_name = request.GET.get('name', 'None')
         in_university = models.University.objects.get(name__exact=in_university_name)
