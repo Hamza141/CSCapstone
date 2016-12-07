@@ -56,5 +56,8 @@
                 </tbody>
             </table>
         </div>
+        {% if "Engineer" in user.role and company.name in user.user_company %}
+            <a href="/company/project/form?name={{ company.name }}" class="btn btn-default">Add a Project</a>
+        {% endif %}
         </div>
 {% endblock %}
