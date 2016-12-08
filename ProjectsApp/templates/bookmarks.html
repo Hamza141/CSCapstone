@@ -10,16 +10,22 @@
                 <tr>
                     <th>Project Name</th>
                     <th>Description</th>
+                    <th>Assigned To</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for bookmark in bookmarks %}
                     <tr>
-                    {{ bookmark.userID }}
-                    {{ user.email }}
                         {% if bookmark.userID.email == user.email %}
-                            <td>{{ bookmark.name }}</td>
-                            <td>{{ bookmark.description }}</td>
+                            <td>
+                                <a href="/company/project?name={{ bookmark.companyID.name }}&project={{ bookmark.projectID.name }}&bookmarkname={{ bookmark.name }}">{{ bookmark.projectID.name }}</a>
+                            </td>
+                            <td>{{ bookmark.projectID.name }}</td>
+                            <td>{{ bookmark.projectID.description }}</td>
+                            <td>{{ bookmark.projectID.assigned_to }}</td>
+                            <td>
+                                <a href="/removebookmarklist?companyname={{ bookmark.companyID.name }}&projectname={{ bookmark.projectID.name }}&bookmarkname={{ bookmark.name }}"
+                                   class="btn btn-danger pull-right">Delete Bookmark</a></td>
                         {% endif %}
                     </tr>
                 {% endfor %}

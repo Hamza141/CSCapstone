@@ -45,7 +45,7 @@ def addBookmark(request):
         new_bookmark.userID = request.user
         new_bookmark.projectID = in_project
         new_bookmark.companyID = in_company
-        new_bookmark.name = in_company.name + in_project.name
+        new_bookmark.name = in_company.name + in_project.name + request.user.email
         new_bookmark.save()
 
         request.user.bookmark_set.add(new_bookmark)
@@ -94,16 +94,13 @@ def removeBookmarkList(request):
         in_bookmark_name = request.GET.get('bookmarkname', 'None')
         in_project_name = request.GET.get('projectname', 'None')
         in_project = models.Project.objects.get(name__exact=in_project_name)
-        in_bookmark = in_company.bookmark_set.get(name=in_bookmark_name)
+        in_bookmark = in_project.bookmark_set.get(name=in_bookmark_name)
         in_bookmark.delete()
-        userIsMember = in_company.members.filter(email__exact=request.user.email).exists()
 
+        bookmarks = models.Bookmark.objects.all()
         context = {
-            'project': in_project,
-            'company': in_company,
-            'bookmark': False,
+            'bookmarks': bookmarks,
             'user': request.user,
-            'userIsMember': userIsMember,
         }
-        return render(request, 'project.html', context)
+        return render(request, 'bookmarks.html', context)
     return render(request, 'autherror.html')

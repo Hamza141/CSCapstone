@@ -194,6 +194,7 @@ def addProject(request):
 
 def getProject(request):
     if request.user.is_authenticated():
+        in_bookmark_name = request.GET.get('bookmarkname', 'None')
         in_company_name = request.GET.get('name', 'None')
         in_company = models.Company.objects.get(name__exact=in_company_name)
         in_project_name = request.GET.get('project', 'None')
@@ -201,7 +202,7 @@ def getProject(request):
         # is_member = in_project.members.filter(email__exact=request.user.email)
         userIsMember = in_company.members.filter(email__exact=request.user.email)
         try:
-            bookmark = in_company.bookmark_set.get(companyID=in_company)
+            bookmark = in_company.bookmark_set.get(name=in_company_name+in_project_name+request.user.email)
         except Exception:
             bookmark = False
         context = {

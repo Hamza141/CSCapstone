@@ -26,7 +26,7 @@ class Project(models.Model):
 
 
 class Bookmark(models.Model):
-    name = models.CharField(max_length=200, default=None)
+    name = models.CharField(max_length=300, default=None)
     userID = models.ForeignKey(MyUser, on_delete=models.CASCADE, default=None)
     projectID = models.ForeignKey(Project, on_delete=models.CASCADE, default=None)
     companyID = models.ForeignKey(Company, on_delete=models.CASCADE, default=None)
