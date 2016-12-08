@@ -3,15 +3,15 @@ CompaniesApp Views
 
 Created by Jacob Dunbar on 10/2/2016.
 """
-from django.http import HttpResponseRedirect
+import datetime
+
 from django.shortcuts import render
 
-from AuthenticationApp.models import MyUser
 from CompaniesApp.forms import ProjectForm
 from ProjectsApp.models import Project
-from . import models
 from . import forms
-import datetime
+from . import models
+
 
 def getCompanies(request):
     if request.user.is_authenticated():
@@ -114,15 +114,16 @@ def addProject(request):
             is_member = in_company.members.filter(email__exact=request.user.email)
 
             new_project = Project(name=form.cleaned_data['name'],
-                                         description=form.cleaned_data["description"],
-                                         yearsOfExperience=form.cleaned_data['yearsOfExperience'],
-                                         programmingLanguage=form.cleaned_data['programmingLanguage'],
-                                         speciality=form.cleaned_data["speciality"],
-                                         company=in_company)
+                                  description=form.cleaned_data["description"],
+                                  yearsOfExperience=form.cleaned_data['yearsOfExperience'],
+                                  programmingLanguage=form.cleaned_data['programmingLanguage'],
+                                  speciality=form.cleaned_data["speciality"],
+                                  )
             # contact_info=form.cleaned_data['contactinfo'])
-            new_project.created_at = datetime.datetime.now();
+            new_project.company = in_company
+            new_project.created_at = datetime.datetime.now()
             new_project.save()
-
+            in_company.project_set.add(new_project)
             context = {
                 'company': in_company,
                 'userIsMember': is_member,
@@ -137,7 +138,7 @@ def addProject(request):
         }
         return render(request, 'projectform.html', context)
 
-    return render(request,"autherror.html")
+    return render(request, "autherror.html")
 
     """"" if request.user.is_authenticated():
             if request.method == 'POST':
@@ -187,3 +188,20 @@ def addProject(request):
                 # render error page if user is not logged in
         return render(request, 'autherror.html')
     """
+
+
+def getProject(request):
+    if request.user.is_authenticated():
+        in_company_name = request.GET.get('name', 'None')
+        in_company = models.Company.objects.get(name__exact=in_company_name)
+        in_project_name = request.GET.get('project', 'None')
+        in_project = in_company.project_set.get(name__exact=in_project_name)
+        # is_member = in_project.members.filter(email__exact=request.user.email)
+        userIsMember = in_company.members.filter(email__exact=request.user.email)
+        context = {
+            'project': in_project,
+            # 'userInProject': is_member,
+            'userIsMember': userIsMember,
+        }
+        return render(request, 'project.html', context)
+    return render(request, 'autherror.html')

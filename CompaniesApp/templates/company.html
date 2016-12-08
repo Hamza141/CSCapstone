@@ -49,7 +49,7 @@
             {% for item in company.project_set.all %}
             <tr>
                 <td>
-                    <a href="/company/project?name={{ company.name }}&project={{ item.tag }}">{{ item.name }}</a>
+                    <a href="/company/project?name={{ company.name }}&project={{ item.name }}">{{ item.name }}</a>
                 </td>
                 <td>
                     {{ item.description }}
