@@ -148,3 +148,18 @@ def getComments(request):
         return render(request, 'comments.html', context)
 
     return render(request, 'autherror.html')
+
+
+# noinspection PyPep8Naming
+def deleteGroup(request):
+    if request.user.is_authenticated:
+        in_name = request.GET.get('name', 'None')
+        in_group = models.Group.objects.get(name__exact=in_name)
+        in_group.delete()
+        groups_list = models.Group.objects.all()
+        context = {
+            'groups': groups_list,
+        }
+        return render(request, 'groups.html', context)
+
+    return render(request, 'autherror.html')
