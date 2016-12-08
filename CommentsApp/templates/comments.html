@@ -2,29 +2,47 @@
 {% block content %}
     <!-- Content -->
     <div class="container" role="main">
-	    <div class="panel panel-default">
-			<div class="table-responsive">
-				<table class="table table-striped sortable">
-					<thead>
-						<tr>
-						  <th style="width: 20%">Time</th>
-							<th style="width: 80%">Comment</th>
-						</tr>
-					</thead>
-					<tbody>
-					   {% for item in comments %}
-					   <tr>
-						   <td>{{ item.time }}</td>
-						   <td>{{ item.comment }}</td>
-					   </tr>
-					   {% endfor %}
-					</tbody>
-				</table>
-				<form method="post" enctype="multipart/form-data" action="/commentform" class="panel-body validate">
-				{% csrf_token %}
-					<input type="submit" value="New Comment" class="btn btn-primary">
-				</form>
-			</div>
-		</div>
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table class="table table-striped sortable">
+                    <thead>
+                    <tr>
+                        <th style="width: 15%">Name</th>
+                        <th style="width: 70%">Comment</th>
+                        <th style="width: 15%">Time</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in comments %}
+                        {% if item.group == group %}
+                            <tr>
+                                <td>{{ item.comment_by.get_full_name }}</td>
+                                <td>{{ item.comment }}</td>
+                                <td>{{ item.time }}</td>
+                                {% if item.comment_by.id is user.id %}
+                                    <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}" class="btn btn-danger pull-right">
+                                        Delete </a></td>
+                                {% else %}
+                                    <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}"
+                                           class="btn btn-danger pull-right disabled">
+                                        Delete </a></td>
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% if userIsMember %}
+                    <form method="post" enctype="multipart/form-data" action="/commentform?name={{ group.name }}"
+                          class="panel-body validate">
+                        {% csrf_token %}
+                        <input type="submit" value="New Comment" class="btn btn-primary">
+                        <a href="/group?name={{ group.name }}" class="btn btn-primary pull-right"> Go Back </a>
+                    </form>
+                {% endif %}
+
+            </div>
+        </div>
     </div>
 {% endblock %}

@@ -3,13 +3,13 @@
 <!-- Content -->
 <div class="container" role="main">
     <div class="panel panel-default">
-        <form method="post" enctype="multipart/form-data" action="/addcomment" class="panel-body validate">
+        <form method="post" enctype="multipart/form-data" action="/addcomment?name={{ group.name }}" class="panel-body validate">
         {% csrf_token %}
              <label for="comment">Comment</label>
              <input type="text" name="comment" id="comment" placeholder="Comment" class="form-control" data-bvalidator="required" data-bvalidator-msg="Comment Required">
              <br>
              <input type="submit" value="Submit" class="btn btn-primary">
-			<a href="/comments" class="btn btn-primary pull-right">Cancel</a>
+			<a href="/group/comments?name={{ group.name }}" class="btn btn-primary pull-right">Cancel</a>
 		</form>
     </div>
 </div>

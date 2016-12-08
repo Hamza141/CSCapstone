@@ -1,13 +1,17 @@
 """GroupsApp Views
 Created by Naman Patwari on 10/10/2016.
 """
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
-from . import models
 from . import forms
+from . import models
 from .models import MyUser
+from CommentsApp.models import Comment
 
 
+# noinspection PyPep8Naming
 def getGroups(request):
     if request.user.is_authenticated():
         groups_list = models.Group.objects.all()
@@ -19,11 +23,12 @@ def getGroups(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getGroup(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
         in_group = models.Group.objects.get(name__exact=in_name)
-        is_member = in_group.members.filter(email__exact=request.user.email)
+        is_member = in_group.members.filter(email__exact=request.user.email).exists()
         context = {
             'group': in_group,
             'userIsMember': is_member,
@@ -33,6 +38,7 @@ def getGroup(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getGroupForm(request):
     if request.user.is_authenticated():
         return render(request, 'groupform.html')
@@ -40,6 +46,7 @@ def getGroupForm(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def getGroupFormSuccess(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
@@ -60,12 +67,13 @@ def getGroupFormSuccess(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def joinGroup(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
         in_group = models.Group.objects.get(name__exact=in_name)
         in_group.members.add(request.user)
-        in_group.save();
+        in_group.save()
         request.user.group_set.add(in_group)
         request.user.save()
         context = {
@@ -76,6 +84,7 @@ def joinGroup(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def unjoinGroup(request):
     if request.user.is_authenticated():
         in_name = request.GET.get('name', 'None')
@@ -92,6 +101,7 @@ def unjoinGroup(request):
     return render(request, 'autherror.html')
 
 
+# noinspection PyPep8Naming
 def inviteStudent(request):
     form = forms.InvitationForm(request.POST)
     if request.user.is_authenticated():
@@ -101,7 +111,7 @@ def inviteStudent(request):
             in_name = request.GET.get('name', 'None')
             in_group = models.Group.objects.get(name__exact=in_name)
             in_group.members.add(student)
-            in_group.save();
+            in_group.save()
             student.group_set.add(in_group)
             student.save()
             context = {
@@ -119,4 +129,37 @@ def inviteStudent(request):
         }
 
         return render(request, 'invitationform.html', context)
+    return render(request, 'autherror.html')
+
+
+# noinspection PyPep8Naming
+def getComments(request):
+    if request.user.is_authenticated:
+        in_name = request.GET.get('name', 'None')
+        in_group = models.Group.objects.get(name__exact=in_name)
+        is_member = in_group.members.filter(email__exact=request.user.email).exists()
+        comments_list = Comment.objects.all()
+        context = {
+            'user': request.user,
+            'group': in_group,
+            'userIsMember': is_member,
+            'comments': comments_list,
+        }
+        return render(request, 'comments.html', context)
+
+    return render(request, 'autherror.html')
+
+
+# noinspection PyPep8Naming
+def deleteGroup(request):
+    if request.user.is_authenticated:
+        in_name = request.GET.get('name', 'None')
+        in_group = models.Group.objects.get(name__exact=in_name)
+        in_group.delete()
+        groups_list = models.Group.objects.all()
+        context = {
+            'groups': groups_list,
+        }
+        return render(request, 'groups.html', context)
+
     return render(request, 'autherror.html')
