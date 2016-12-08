@@ -1,0 +1,31 @@
+{% extends "body.html" %}
+
+{% block content %}
+
+    <!-- Content -->
+    <div class="container" role="main">
+        <div class="table-responsive">
+            <table class="table table-striped sortable">
+                <thead>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for bookmark in bookmarks %}
+                    <tr>
+                    {{ bookmark.userID }}
+                    {{ user.email }}
+                        {% if bookmark.userID.email == user.email %}
+                            <td>{{ bookmark.name }}</td>
+                            <td>{{ bookmark.description }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

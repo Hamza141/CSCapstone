@@ -202,11 +202,16 @@ def getProject(request):
         in_project = in_company.project_set.get(name__exact=in_project_name)
         # is_member = in_project.members.filter(email__exact=request.user.email)
         userIsMember = in_company.members.filter(email__exact=request.user.email)
+        try:
+            bookmark = in_company.bookmark_set.get(companyID=in_company)
+        except Exception:
+            bookmark = False
         context = {
             'project': in_project,
             'company': in_company,
             # 'userInProject': is_member,
             'userIsMember': userIsMember,
+            'bookmark': bookmark
         }
         return render(request, 'project.html', context)
     return render(request, 'autherror.html')
