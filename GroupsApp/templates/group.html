@@ -8,13 +8,13 @@
             <h1>{{ group.name }}</h1>
             <p>{{ group.description }}</p>
             {% if userIsMember %}
+                <a href="/group/comments?name={{ group.name }}" class="btn btn-default pull-left">Comments</a>
                 <a href="/group/unjoin?name={{ group.name }}" class="btn btn-default pull-right">Unjoin this Group</a>
                 <a href="/group/invitestudent?name={{ group.name }}" class="btn btn-default">Add Student to Group</a>
             {% endif %}
-            {% if "Student" in user.role and userIsMember == False %}
+            {% if "Student" in user.role and userIsMember is False %}
                 <a href="/group/join?name={{ group.name }}" class="btn btn-default">Join this Group</a>
             {% endif %}
-            {{ userIsMember }}
         </div>
     </div>
 
