@@ -14,10 +14,11 @@ class CompanyForm(forms.Form):
 class ProjectForm(forms.Form):
     name = forms.CharField(label='Name', max_length=50)
     description = forms.CharField(label='Description', max_length=300)
-    assignedTo = forms.CharField(label='Assigned To', max_length=100)
+    #assignedTo = forms.CharField(label='Assigned To', max_length=100)
     yearsOfExperience = forms.IntegerField(label="Years of Experience")
     programmingLanguage = forms.CharField(label='Programming Language', max_length=20)
     speciality = forms.CharField(label='Speciality', max_length=20)
+    #createdBy = forms.CharField(label="Created By", max_length=50)
     #created_at = forms.DateTimeField('date created')
     #updated_at = forms.DateTimeField('date updated')
 

@@ -118,10 +118,12 @@ def addProject(request):
                                   yearsOfExperience=form.cleaned_data['yearsOfExperience'],
                                   programmingLanguage=form.cleaned_data['programmingLanguage'],
                                   speciality=form.cleaned_data["speciality"],
+                                  #createdBy = form.cleaned_data["createdBy"]
                                   )
             # contact_info=form.cleaned_data['contactinfo'])
             new_project.company = in_company
             new_project.created_at = datetime.datetime.now()
+            new_project.createdBy = request.user
             new_project.save()
             in_company.project_set.add(new_project)
             context = {
@@ -200,8 +202,27 @@ def getProject(request):
         userIsMember = in_company.members.filter(email__exact=request.user.email)
         context = {
             'project': in_project,
+            'company': in_company,
             # 'userInProject': is_member,
             'userIsMember': userIsMember,
         }
         return render(request, 'project.html', context)
+    return render(request, 'autherror.html')
+
+def removeProject(request):
+    if request.user.is_authenticated():
+        in_company_name = request.GET.get('name', 'None')
+        in_company = models.Company.objects.get(name__exact=in_company_name)
+
+
+        in_project_name = request.GET.get('project', 'None')
+        in_project = in_company.project_set.get(name__exact=in_project_name)
+        in_project.delete()
+        is_member = in_company.members.filter(email__exact=request.user.email)
+        context = {
+            'company': in_company,
+            'userIsMember': is_member,
+        }
+        return render(request, 'company.html', context)
+    # render error page if user is not logged in
     return render(request, 'autherror.html')
