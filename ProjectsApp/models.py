@@ -17,7 +17,7 @@ class Project(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, default=None)
     created_at = models.DateField()
     assigned_to = models.ForeignKey(Group, on_delete=models.CASCADE,null=True)
-    createdBy = models.OneToOneField(MyUser,on_delete=models.CASCADE,null=True)
+    createdBy = models.ForeignKey(MyUser,on_delete=models.CASCADE,default=None,null=True)
 
     def __str__(self):
         return self.name
