@@ -5,9 +5,11 @@ Created by Jacob Dunbar on 10/2/2016.
 """
 import datetime
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from CompaniesApp.forms import ProjectForm
+from CompaniesApp.forms import ProjectForm, UpdateForm
 from ProjectsApp.models import Project
 from . import forms
 from . import models
@@ -118,7 +120,7 @@ def addProject(request):
                                   yearsOfExperience=form.cleaned_data['yearsOfExperience'],
                                   programmingLanguage=form.cleaned_data['programmingLanguage'],
                                   speciality=form.cleaned_data["speciality"],
-                                  #createdBy = form.cleaned_data["createdBy"]
+                                  # createdBy = form.cleaned_data["createdBy"]
                                   )
             # contact_info=form.cleaned_data['contactinfo'])
             new_project.company = in_company
@@ -215,11 +217,11 @@ def getProject(request):
         return render(request, 'project.html', context)
     return render(request, 'autherror.html')
 
+
 def removeProject(request):
     if request.user.is_authenticated():
         in_company_name = request.GET.get('name', 'None')
         in_company = models.Company.objects.get(name__exact=in_company_name)
-
 
         in_project_name = request.GET.get('project', 'None')
         in_project = in_company.project_set.get(name__exact=in_project_name)
@@ -232,3 +234,19 @@ def removeProject(request):
         return render(request, 'company.html', context)
     # render error page if user is not logged in
     return render(request, 'autherror.html')
+
+
+@login_required
+def update_profile(request):
+    in_name = request.GET.get('project', 'None')
+    in_project = Project.objects.get(name=in_name)
+    form = UpdateForm(request.POST or None, instance=in_project)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Success, your profile was saved!')
+    context = {
+        "form": form,
+        "page_name": "Update a Project",
+        "button_value": "Update",
+    }
+    return render(request, 'updateProject.html', context)

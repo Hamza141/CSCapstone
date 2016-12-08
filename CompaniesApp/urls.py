@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^company/project/form$', views.addProject, name="AddProject"),
     url(r'^company/project$', views.getProject, name="Project"),
     url(r'^company/project/remove$', views.removeProject, name="RemoveProject"),
+    url(r'^company/project/update$', views.update_profile, name='UpdateProfile'),
 
 ]

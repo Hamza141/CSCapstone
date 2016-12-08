@@ -11,14 +11,17 @@
         <img src="/{{ company.photo }}" alt="Company Image" width=150/>
         <h2>{{ project.name }}</h2>
         <p>{{ project.description }}</p>
-        {% if "Engineer" in user.role and userIsMember %}
-        <a href="/company/project/remove?name={{ company.name }}&project={{ project.name }}"
-           class="btn btn-default pull-right">Delete this Project</a>
-        {% endif %}
+
         Created By:
         <p>{{project.createdBy.get_full_name}}</p>
         Created On:
         <p>{{project.created_at}}</p>
+        {% if "Engineer" in user.role and userIsMember %}
+        <a href="/company/project/update?name={{ company.name }}&project={{ project.name }}"
+           class="btn btn-default">Update this Project</a>
+        <a href="/company/project/remove?name={{ company.name }}&project={{ project.name }}"
+           class="btn btn-default pull-right">Delete this Project</a>
+        {% endif %}
     </div>
 </div>
 <div class="container" role="main">
