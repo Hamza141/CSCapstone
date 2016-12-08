@@ -3,10 +3,14 @@ CompaniesApp Views
 
 Created by Jacob Dunbar on 10/2/2016.
 """
+import datetime
+
 from django.shortcuts import render
 
-from . import models
+from CompaniesApp.forms import ProjectForm
+from ProjectsApp.models import Project
 from . import forms
+from . import models
 
 
 def getCompanies(request):
@@ -102,35 +106,123 @@ def unjoinCompany(request):
 
 def addProject(request):
     if request.user.is_authenticated():
-        if request.method == 'POST':
-            form = forms.ProjectForm(request.POST)
-            if form.is_valid():
-                in_company_name = request.GET.get('name', 'None')
-                from . import models
-                in_company = models.Company.objects.get(name__exact=in_company_name)
-                if in_company.course_set.filter(description_exaction=form.cleaned_data['description']).exists():
-                    return render(request, 'projectform.html',
-                                  {'error': 'Error: That project name already exists at this Company!'})
-                from ProjectsApp import models
-                new_project = models.Project(name=form.cleaned_data['name'],
-                                             description=form.cleaned_data['description'],
-                                             yearsOfExperience=form.cleaned_data['yearsOfExperience'],
-                                             programmingLanguage=form.cleaned_data['programmingLanguage'],
-                                             speciality=form.cleaned_data['speciality'],
-                                             company=in_company)
-                from . import models
-                new_project.save()
-                in_company.course_set.add(new_project)
-                is_member = in_company.members.filter(email__exact=request.user.email)
+        form = ProjectForm(request.POST or None)
+
+        if form.is_valid():
+            in_name = request.GET.get('name', 'None')
+            in_company = models.Company.objects.get(name__exact=in_name)
+            is_member = in_company.members.filter(email__exact=request.user.email)
+
+            new_project = Project(name=form.cleaned_data['name'],
+                                  description=form.cleaned_data["description"],
+                                  yearsOfExperience=form.cleaned_data['yearsOfExperience'],
+                                  programmingLanguage=form.cleaned_data['programmingLanguage'],
+                                  speciality=form.cleaned_data["speciality"],
+                                  #createdBy = form.cleaned_data["createdBy"]
+                                  )
+            # contact_info=form.cleaned_data['contactinfo'])
+            new_project.company = in_company
+            new_project.created_at = datetime.datetime.now()
+            new_project.createdBy = request.user
+            new_project.save()
+            in_company.project_set.add(new_project)
+            context = {
+                'company': in_company,
+                'userIsMember': is_member,
+            }
+            return render(request, 'company.html', context)
+
+        context = {
+            "form": form,
+            "page_name": "Add a Project",
+            "button_value": "Add",
+            "links": ["logout"],
+        }
+        return render(request, 'projectform.html', context)
+
+    return render(request, "autherror.html")
+
+    """"" if request.user.is_authenticated():
+            if request.method == 'POST':
+                form = forms.ProjectForm(request.POST or None)
+                if form.is_valid():
+                    in_company_name = request.GET.get('name', 'None')
+                    from . import models
+                    in_company = models.Company.objects.get(name__exact=in_company_name)
+                    if in_company.course_set.filter(description_exaction=form.cleaned_data['description']).exists():
+                        return render(request, 'projectform.html',
+                                      {'error': 'Error: That project name already exists at this Company!'})
+                    from ProjectsApp import models
+                    new_project = models.Project(name=form.cleaned_data['name'],
+                                                 description=form.cleaned_data['description'],
+                                                 assignedTo=form.cleaned_data['assignedTo'],
+                                                 yearsOfExperience=form.cleaned_data['yearsOfExperience'],
+                                                 programmingLanguage=form.cleaned_data['programmingLanguage'],
+                                                 speciality=form.cleaned_data['speciality'],
+                                                 company=in_company_name)
+                    from . import models
+                    new_project.save()
+                    in_company.project_set.add(new_project)
+                    is_member = in_company.members.filter(email__exact=request.user.email)
+                    context = {
+                        'company': in_company,
+                        'userIsMember': is_member,
+                    }
+                    return render(request, 'company.html', context)
+
                 context = {
-                    'company': in_company,
-                    'userIsMember': is_member,
+                    "form": form,
+                    "page_name": "Add Project",
+                    "button_value": "Add",
+                    "links": ["logout"],
                 }
-                return render(request, 'company.html', context)
+                return render(request, 'projectform.html', context)
+
             else:
-                return render(request, 'projectform.html', {'error': 'Undefined Error!'})
-        else:
-            form = forms.ProjectForm()
-            return render(request, 'projectform.html')
-            # render error page if user is not logged in
+                form = forms.ProjectForm()
+                context = {
+                    "form": form,
+                    "page_name": "Add Project",
+                    "button_value": "Add",
+                    "links": ["logout"],
+                }
+                return render(request, 'projectform.html', context)
+                # render error page if user is not logged in
+        return render(request, 'autherror.html')
+    """
+
+
+def getProject(request):
+    if request.user.is_authenticated():
+        in_company_name = request.GET.get('name', 'None')
+        in_company = models.Company.objects.get(name__exact=in_company_name)
+        in_project_name = request.GET.get('project', 'None')
+        in_project = in_company.project_set.get(name__exact=in_project_name)
+        # is_member = in_project.members.filter(email__exact=request.user.email)
+        userIsMember = in_company.members.filter(email__exact=request.user.email)
+        context = {
+            'project': in_project,
+            'company': in_company,
+            # 'userInProject': is_member,
+            'userIsMember': userIsMember,
+        }
+        return render(request, 'project.html', context)
+    return render(request, 'autherror.html')
+
+def removeProject(request):
+    if request.user.is_authenticated():
+        in_company_name = request.GET.get('name', 'None')
+        in_company = models.Company.objects.get(name__exact=in_company_name)
+
+
+        in_project_name = request.GET.get('project', 'None')
+        in_project = in_company.project_set.get(name__exact=in_project_name)
+        in_project.delete()
+        is_member = in_company.members.filter(email__exact=request.user.email)
+        context = {
+            'company': in_company,
+            'userIsMember': is_member,
+        }
+        return render(request, 'company.html', context)
+    # render error page if user is not logged in
     return render(request, 'autherror.html')
