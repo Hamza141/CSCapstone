@@ -4,6 +4,7 @@ UniversitiesApp Models
 Created by Jacob Dunbar on 11/5/2016.
 """
 from django.db import models
+
 from AuthenticationApp.models import MyUser
 
 
@@ -17,6 +18,8 @@ class University(models.Model):
 
     def __str__(self):
         return self.name
+
+
 class Course(models.Model):
     tag = models.CharField(max_length=10)
     name = models.CharField(max_length=50)

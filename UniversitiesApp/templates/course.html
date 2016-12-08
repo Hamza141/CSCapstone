@@ -15,8 +15,10 @@
             {% if userInCourse %}
                 <a href="/university/course/unjoin?name={{ university.name }}&course={{ course.tag }}"
                    class="btn btn-default pull-right">Unjoin this Course</a>
-                <a href="/university/course/addstudent?name={{ university.name }}&course={{ course.tag }}"
-                   class="btn btn-default">Add Student</a>
+                {% if "Teacher" in user.role %}
+                    <a href="/university/course/addstudent?name={{ university.name }}&course={{ course.tag }}"
+                       class="btn btn-default">Add Student</a>
+                {% endif %}
             {% elif userIsMember %}
                 <a href="/university/course/join?name={{ university.name }}&course={{ course.tag }}"
                    class="btn btn-default">Join this Course</a>

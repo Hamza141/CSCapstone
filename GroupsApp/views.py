@@ -3,8 +3,8 @@ Created by Naman Patwari on 10/10/2016.
 """
 from django.shortcuts import render
 
-from . import models
 from . import forms
+from . import models
 from .models import MyUser
 
 
@@ -65,7 +65,7 @@ def joinGroup(request):
         in_name = request.GET.get('name', 'None')
         in_group = models.Group.objects.get(name__exact=in_name)
         in_group.members.add(request.user)
-        in_group.save();
+        in_group.save()
         request.user.group_set.add(in_group)
         request.user.save()
         context = {
@@ -101,7 +101,7 @@ def inviteStudent(request):
             in_name = request.GET.get('name', 'None')
             in_group = models.Group.objects.get(name__exact=in_name)
             in_group.members.add(student)
-            in_group.save();
+            in_group.save()
             student.group_set.add(in_group)
             student.save()
             context = {
