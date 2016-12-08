@@ -3,6 +3,11 @@
 <!-- Content -->
 <div class="container theme-showcase" role="main">
     <div class="jumbotron">
+        {% if bookmark is False %}
+                <a href="/addbookmark?companyname={{ company.name }}&projectname={{ project.name }}&bookmarkname={{ bookmark.name }}" class="btn btn-primary pull-right">Bookmark</a>
+        {% else %}
+            <a href="/removebookmark?companyname={{ company.name }}&projectname={{ project.name }}&bookmarkname={{ bookmark.name }}" class="btn btn-danger pull-right">Delete Bookmark</a>
+        {% endif %}
         <img src="/{{ company.photo }}" alt="Company Image" width=150/>
         <h2>{{ project.name }}</h2>
         <p>{{ project.description }}</p>
