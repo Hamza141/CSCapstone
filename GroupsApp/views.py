@@ -140,6 +140,7 @@ def getComments(request):
         is_member = in_group.members.filter(email__exact=request.user.email).exists()
         comments_list = Comment.objects.all()
         context = {
+            'user': request.user,
             'group': in_group,
             'userIsMember': is_member,
             'comments': comments_list,

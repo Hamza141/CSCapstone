@@ -20,6 +20,14 @@
                                 <td>{{ item.comment_by.get_full_name }}</td>
                                 <td>{{ item.comment }}</td>
                                 <td>{{ item.time }}</td>
+                                {% if item.comment_by.id is user.id %}
+                                    <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}" class="btn btn-danger pull-right">
+                                        Delete </a></td>
+                                {% else %}
+                                    <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}"
+                                           class="btn btn-danger pull-right disabled">
+                                        Delete </a></td>
+                                {% endif %}
                             </tr>
                         {% endif %}
                     {% endfor %}
