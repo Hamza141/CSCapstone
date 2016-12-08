@@ -10,6 +10,8 @@
         <a href="/company/project/remove?name={{ company.name }}&project={{ project.name }}"
            class="btn btn-default pull-right">Delete this Project</a>
         {% endif %}
+        Created By:
+        <p>{{project.createdBy.get_full_name}}</p>
     </div>
 </div>
 <div class="container" role="main">
@@ -17,18 +19,31 @@
         <table class="table table-striped sortable">
             <thead>
             <tr>
-                <th>Projects</th>
+                <th>Qualifications</th>
             </tr>
             </thead>
             <tbody>
-            {% for item in project.members.all %}
+            <tr>
+                <td>Programming Language </td>
+                <td>{{ project.programmingLanguage }}</td>
+            </tr>
+            <tr>
+                <td>Years of Experience </td>
+                <td>{{ project.yearsOfExperience }}</td>
+            </tr>
+            <tr>
+                <td>Speciality </td>
+                <td>{{ project.speciality }}</td>
+            </tr>
+            <!--{% for item in project.members.all %}
             {% if "Engineer" in item.role %}
             <tr>
                 <td>{{ item.name }}</td>
             </tr>
             {% endif %}
 
-            {% endfor %}
+            {% endfor %}-->
+
             </tbody>
         </table>
     </div>
