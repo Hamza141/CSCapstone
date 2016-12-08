@@ -21,7 +21,8 @@
                                 <td>{{ item.comment }}</td>
                                 <td>{{ item.time }}</td>
                                 {% if item.comment_by.id is user.id %}
-                                    <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}" class="btn btn-danger pull-right">
+                                    <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}"
+                                           class="btn btn-danger pull-right">
                                         Delete </a></td>
                                 {% else %}
                                     <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}"
@@ -33,15 +34,12 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                {% if userIsMember %}
-                    <form method="post" enctype="multipart/form-data" action="/commentform?name={{ group.name }}"
-                          class="panel-body validate">
-                        {% csrf_token %}
-                        <input type="submit" value="New Comment" class="btn btn-primary">
-                        <a href="/group?name={{ group.name }}" class="btn btn-primary pull-right"> Go Back </a>
-                    </form>
-                {% endif %}
-
+                <form method="post" enctype="multipart/form-data" action="/commentform?name={{ group.name }}"
+                      class="panel-body validate">
+                    {% csrf_token %}
+                    <input type="submit" value="New Comment" class="btn btn-primary">
+                    <a href="/group?name={{ group.name }}" class="btn btn-primary pull-right"> Go Back </a>
+                </form>
             </div>
         </div>
     </div>
