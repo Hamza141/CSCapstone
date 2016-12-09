@@ -16,6 +16,8 @@
         <p>{{project.createdBy.get_full_name}}</p>
         Created On:
         <p>{{project.created_at}}</p>
+        Assigned To:
+        <p>{{ project.assigned_to }}</p>
         {% if "Engineer" in user.role and userIsMember %}
         <a href="/company/project/update?name={{ company.name }}&project={{ project.name }}"
            class="btn btn-default">Update this Project</a>

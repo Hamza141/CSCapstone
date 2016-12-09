@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from CompaniesApp.forms import ProjectForm, UpdateForm
+from GroupsApp.models import Group
 from ProjectsApp.models import Project
 from . import forms
 from . import models
@@ -204,7 +205,7 @@ def getProject(request):
         # is_member = in_project.members.filter(email__exact=request.user.email)
         userIsMember = in_company.members.filter(email__exact=request.user.email)
         try:
-            bookmark = in_company.bookmark_set.get(name=in_company_name+in_project_name+request.user.email)
+            bookmark = in_company.bookmark_set.get(name=in_company_name + in_project_name + request.user.email)
         except Exception:
             bookmark = False
         context = {
@@ -250,3 +251,63 @@ def update_profile(request):
         "button_value": "Update",
     }
     return render(request, 'updateProject.html', context)
+
+
+@login_required
+def applyProject(request):
+    if request.user.is_authenticated():
+        in_company_name = request.GET.get('name', 'None')
+        in_company = models.Company.objects.get(name__exact=in_company_name)
+        in_project_name = request.GET.get('project', 'None')
+        in_project = in_company.project_set.get(name__exact=in_project_name)
+        in_group_name = request.GET.get('group', 'None')
+        in_group = Group.objects.get(name=in_group_name)
+        # in_project.assigned_to = in_group
+        in_group.project_set.add(in_project)
+        in_group.save()
+
+        userIsMember = in_company.members.filter(email__exact=request.user.email)
+
+        in_bookmark_name = request.GET.get('bookmarkname', 'None')
+        try:
+            bookmark = in_company.bookmark_set.get(name=in_company_name + in_project_name + request.user.email)
+        except Exception:
+            bookmark = False
+
+        context = {
+            'project': in_project,
+            'company': in_company,
+            'userIsMember': userIsMember,
+            'bookmark': bookmark,
+        }
+        return render(request, 'project.html', context)
+    return render(request, 'autherror.html')
+
+
+@login_required
+def leaveProject(request):
+    in_company_name = request.GET.get('name', 'None')
+    in_company = models.Company.objects.get(name__exact=in_company_name)
+    in_project_name = request.GET.get('project', 'None')
+    in_project = in_company.project_set.get(name__exact=in_project_name)
+    in_group_name = request.GET.get('group', 'None')
+    in_group = Group.objects.get(name=in_group_name)
+    in_project.assigned_to = None
+    in_group.project_set.remove(in_project)
+    in_group.save()
+
+    userIsMember = in_company.members.filter(email__exact=request.user.email)
+
+    in_bookmark_name = request.GET.get('bookmarkname', 'None')
+    try:
+        bookmark = in_company.bookmark_set.get(name=in_company_name + in_project_name + request.user.email)
+    except Exception:
+        bookmark = False
+
+    context = {
+        'project': in_project,
+        'company': in_company,
+        'userIsMember': userIsMember,
+        'bookmark': bookmark,
+    }
+    return render(request, 'project.html', context)

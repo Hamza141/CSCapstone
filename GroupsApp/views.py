@@ -153,6 +153,9 @@ def deleteGroup(request):
     if request.user.is_authenticated:
         in_name = request.GET.get('name', 'None')
         in_group = models.Group.objects.get(name__exact=in_name)
+        # from ProjectsApp.models import Project
+        # project = Project.objects.get(assigned_to=in_group)
+        # in_group.project_set.remove(in_group)
         in_group.delete()
         groups_list = models.Group.objects.all()
         context = {
@@ -164,17 +167,52 @@ def deleteGroup(request):
 
 
 # noinspection PyPep8Naming
-def chooseProject(request):
+def getProjects(request):
     if request.user.is_authenticated:
         from . import models
-        # in_name = request.GET.get('name', 'None')
-        # in_group = models.Group.objects.get(name__exact=in_name)
+        in_name = request.GET.get('name', 'None')
+        in_group = models.Group.objects.get(name__exact=in_name)
         # in_group.delete()
         # groups_list = models.Group.objects.all()
         from ProjectsApp import models
         projects_list = models.Project.objects.all()
+        des = in_group.description.split()
+        count = des.__len__()
+
+        # from AuthenticationApp.models import MyUser
+        # members = MyUser.groups_set
+
+        des2 = request.user.about.split()
+        count2 = des2.__len__()
+        from ProjectsApp.models import Project
+        x = Project
+        for x in projects_list:
+            x.show = False
+        for x in projects_list:
+            for i in range(0, count):
+                if des.__getitem__(i) in x.programmingLanguage:
+                    x.show = True
+                    break
+                if des.__getitem__(i) in x.speciality:
+                    x.show = True
+                    break
+                if des.__getitem__(i) is x.description:
+                    x.show = True
+                    break
+            for i in range(0, count2):
+                if des2.__getitem__(i) in x.programmingLanguage:
+                    x.show = True
+                    break
+                if des2.__getitem__(i) in x.speciality:
+                    x.show = True
+                    break
+                if des2.__getitem__(i) is x.description:
+                    x.show = True
+                    break
+
         context = {
             'projects': projects_list,
+            'group': in_group,
         }
         return render(request, 'projects.html', context)
 

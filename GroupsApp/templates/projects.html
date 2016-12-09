@@ -15,17 +15,20 @@
                 </thead>
                 <tbody>
                 {% for item in projects %}
-                    <tr>
-                        <td>
-                            <a href="/company/project?name={{ item.company.name }}&project={{ item.name }}">{{ item.name }}</a>
-                        </td>
-                        <td>{{ item.description }}</td>
-                        <td>{{ item.assignedTo }}
-                            {% if item.assignedTo is None %}
-                                None
-                            {% endif %}
-                        </td>
-                    </tr>
+                    {% if item.show is True %}
+                        <tr>
+                            <td>
+                                <a href="/company/project?name={{ item.company.name }}&project={{ item.name }}">{{ item.name }}</a>
+                            </td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.assigned_to }}
+                                {% if item.assigned_to is None %}
+                                    <a href="/company/project/apply?name={{ item.company.name }}&project={{ item.name }}&group={{ group.name }}"
+                                       class="btn btn-primary pull-right"> Choose Project </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
