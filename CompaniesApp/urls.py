@@ -8,7 +8,7 @@ from . import views
 
 urlpatterns = [
     url(r'^company/all$', views.getCompanies, name='Companies'),
-	url(r'^company/form$', views.getCompanyForm, name='CompanyForm'),
+    url(r'^company/form$', views.getCompanyForm, name='CompanyForm'),
     url(r'^company/formsuccess$', views.getCompanyFormSuccess, name='CompanyFormSuccess'),
     url(r'^company/join$', views.joinCompany, name='JoinCompany'),
     url(r'^company/unjoin$', views.unjoinCompany, name='UnjoinCompany'),
@@ -18,5 +18,5 @@ urlpatterns = [
     url(r'^company/project/remove$', views.removeProject, name="RemoveProject"),
     url(r'^company/project/update$', views.update_profile, name='UpdateProfile'),
     url(r'^company/project/apply$', views.applyProject, name='ApplyProject'),
-
+    url(r'^company/project/leave$', views.leaveProject, name='LeaveProject'),
 ]

@@ -21,6 +21,7 @@ class Project(models.Model):
     createdBy = models.ForeignKey(MyUser, on_delete=models.CASCADE, default=None, null=True)
     show = models.BooleanField(default=False)
 
+
     def __str__(self):
         return self.name
 

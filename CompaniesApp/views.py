@@ -264,6 +264,8 @@ def applyProject(request):
         in_group = Group.objects.get(name=in_group_name)
         # in_project.assigned_to = in_group
         in_group.project_set.add(in_project)
+        in_group.pro = in_project.name
+        in_group.comp = in_company_name
         in_group.save()
 
         userIsMember = in_company.members.filter(email__exact=request.user.email)
@@ -292,11 +294,12 @@ def leaveProject(request):
     in_project = in_company.project_set.get(name__exact=in_project_name)
     in_group_name = request.GET.get('group', 'None')
     in_group = Group.objects.get(name=in_group_name)
-    in_project.assigned_to = None
     in_group.project_set.remove(in_project)
+    in_group.pro = None
+    in_group.comp = None
     in_group.save()
 
-    userIsMember = in_company.members.filter(email__exact=request.user.email)
+    is_member = in_group.members.filter(email__exact=request.user.email).exists()
 
     in_bookmark_name = request.GET.get('bookmarkname', 'None')
     try:
@@ -305,9 +308,10 @@ def leaveProject(request):
         bookmark = False
 
     context = {
+        'group': in_group,
         'project': in_project,
         'company': in_company,
-        'userIsMember': userIsMember,
         'bookmark': bookmark,
+        'userIsMember': is_member,
     }
-    return render(request, 'project.html', context)
+    return render(request, 'group.html', context)
