@@ -18,7 +18,7 @@
                         {% if item.group == group %}
                             <tr>
                                 <td>{{ item.comment_by.get_full_name }}</td>
-                                <td>{{ item.comment }}</td>
+                                <td>{{ item.comment | safe }}</td>
                                 <td>{{ item.time }}</td>
                                 {% if item.comment_by.id is user.id %}
                                     <td><a href="/deletecomment?name={{ group.name }}&comment={{ item.comment }}"
