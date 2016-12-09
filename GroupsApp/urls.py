@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^group/invitestudent$', views.inviteStudent, name='InviteStudent'),
     url(r'^group/comments', views.getComments, name='GetComments'),
     url(r'^group/delete', views.deleteGroup, name='DeleteGroup'),
+    url(r'^group/project', views.chooseProject, name='ChooseProject'),
 ]

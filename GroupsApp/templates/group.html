@@ -11,6 +11,9 @@
             {% if userIsMember %}
                 <a href="/group/invitestudent?name={{ group.name }}" class="btn btn-default pull-left">Add Student to
                     Group</a>
+                {% if group.project_set is not None %}
+                    <a href="/group/project?name={{ group.name }}" class="btn btn-default pull-left">See Projects</a>
+                {% endif %}
                 <a href="/group/delete?name={{ group.name }}" class="btn btn-danger pull-right">Delete this Group</a>
                 <a href="/group/unjoin?name={{ group.name }}" class="btn btn-default pull-right">Unjoin this Group</a>
             {% endif %}

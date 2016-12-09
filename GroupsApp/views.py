@@ -1,14 +1,12 @@
 """GroupsApp Views
 Created by Naman Patwari on 10/10/2016.
 """
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
 
+from CommentsApp.models import Comment
 from . import forms
 from . import models
 from .models import MyUser
-from CommentsApp.models import Comment
 
 
 # noinspection PyPep8Naming
@@ -90,7 +88,7 @@ def unjoinGroup(request):
         in_name = request.GET.get('name', 'None')
         in_group = models.Group.objects.get(name__exact=in_name)
         in_group.members.remove(request.user)
-        in_group.save();
+        in_group.save()
         request.user.group_set.remove(in_group)
         request.user.save()
         context = {
@@ -161,5 +159,23 @@ def deleteGroup(request):
             'groups': groups_list,
         }
         return render(request, 'groups.html', context)
+
+    return render(request, 'autherror.html')
+
+
+# noinspection PyPep8Naming
+def chooseProject(request):
+    if request.user.is_authenticated:
+        from . import models
+        # in_name = request.GET.get('name', 'None')
+        # in_group = models.Group.objects.get(name__exact=in_name)
+        # in_group.delete()
+        # groups_list = models.Group.objects.all()
+        from ProjectsApp import models
+        projects_list = models.Project.objects.all()
+        context = {
+            'projects': projects_list,
+        }
+        return render(request, 'projects.html', context)
 
     return render(request, 'autherror.html')
